@@ -2,7 +2,7 @@
 #####Sun-Yi Lin (sl3833), Hao-Hsiang Chuang (hc2751)
 ###Visualization of Yelp's Academic Dataset
 
-->![yelp_logo](https://github.com/lsphate/Visualization-of-Yelp-s-Academic-Dataset/blob/master/Yelp_Logo.png =200x)<-
+![yelp_logo](https://raw.githubusercontent.com/lsphate/Visualization-of-Yelp-s-Academic-Dataset/master/Yelp_Logo.png =200x)
 
 Yelp is a famous recommendation service base on varies businesses, it helps people to find great local businesses including restaurant, dentists, hair stylists, mechanics, etc. It was founded in 2004 and now it has 135 million monthly visitors and 71 million reviews.
 
