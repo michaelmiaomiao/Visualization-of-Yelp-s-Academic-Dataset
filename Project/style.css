@@ -1,5 +1,11 @@
 * {
+    font-size: 12px;
     font-family: Verdana;
+}
+
+text {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
 }
 
 .states {
