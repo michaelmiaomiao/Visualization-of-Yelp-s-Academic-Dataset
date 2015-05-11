@@ -2,62 +2,115 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script type="text/javascript" src="d3/d3.v3.js"></script>
+        <title>EECS E6895 Project</title>
+        <script type="text/javascript"></script>
+        <script src="./lib/jQuery/jquery-2.1.4.js"></script>
+        <script src="./lib/D3/d3.min.js"></script>
+        <script src="./lib/TopoJSON/topojson.min.js"></script>
+        <script src="http://d3js.org/queue.v1.min.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head>
     <body>
-        <script src="./D3/d3.min.js"></script>
-        <script src="./TopoJSON/topojson.min.js"></script>
-        <script src="./Datamaps/datamaps.all.min.js"></script>
-        <script src="http://d3js.org/queue.v1.min.js"></script>
-
         <h1>Visualization of Yelp's Academic Dataset</h1>
         <div class="navigator">
             <a id="currenttab" href="map.html">Map View</a>
             <a href="sunburst.html">Sunburst Diagram</a>
         </div>
-        <!--
         <script>
         var width = 960,
-            height = 500;
+            height = 500,
+            active = d3.select(null);
 
-        var radius = d3.scale.sqrt()
-            .domain([0, 1e6])
-            .range([0, 10]);
+        var projection = d3.geo.albersUsa()
+            .scale(1000)
+            .translate([width / 2, height / 2]);
 
-        var path = d3.geo.path();
+        var path = d3.geo.path().projection(projection);
+
+        var tp = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
         var svg = d3.select("body").append("svg")
             .attr("width", width)
             .attr("height", height);
 
+        svg.append("rect")
+            .attr("class", "background")
+            .attr("width", width)
+            .attr("height", height)
+            .on("click", clicked);
+
+        var g = svg.append("g").style("stroke-width", "1.5px");
+        var pairIDCode = {};
+        var pairIDName = {};
+
         queue()
             .defer(d3.json, "./source/us.json")
-            .defer(d3.json, "./source/us-state-centroids.json")
+            .defer(d3.tsv, "./source/us-state-names.tsv")
             .await(ready);
 
-        function ready(error, us, centroid) {
-          svg.append("path")
-              .attr("class", "states")
-              .datum(topojson.feature(us, us.objects.states))
-              .attr("d", path);
+        function ready(error, us, names) {
+            names.forEach(function(d) {
+                pairIDCode[d.id] = d.code;
+                pairIDName[d.id] = d.name;
+            });
 
-          svg.selectAll(".symbol")
-              .data(centroid.features.sort(function(a, b) { return b.properties.population - a.properties.population; }))
+            g.selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
             .enter().append("path")
-              .attr("class", "symbol")
-              .attr("d", path.pointRadius(function(d) { return radius(d.properties.population); }));
+            .attr("d", path)
+            .attr("class", "feature")
+            .on("mouseover", function(d) {
+                tp.transition().duration(500).style("opacity", 1);
+                tp.text(pairIDName[d.id])
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 10) + "px");})
+            .on("mouseout", function(d) {
+                tp.transition().duration(500).style("opacity", 0);})
+            .on("click", clicked);
+
+            g.append("path")
+            .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+            .attr("class", "mesh")
+            .attr("d", path);
+        }
+
+        function clicked(d) {
+            if (active.node() === this) return reset();
+            active.classed("active", false);
+            active = d3.select(this).classed("active", true);
+
+            var bounds = path.bounds(d),
+                dx = bounds[1][0] - bounds[0][0],
+                dy = bounds[1][1] - bounds[0][1],
+                x = (bounds[0][0] + bounds[1][0]) / 2,
+                y = (bounds[0][1] + bounds[1][1]) / 2,
+                scale = .9 / Math.max(dx / width, dy / height),
+                translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+            g.transition()
+            .duration(750)
+            .style("stroke-width", 1.5 / scale + "px")
+            .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+            $('#bd').text(pairIDCode[d.id]);
+        }
+
+        function reset() {
+            active.classed("active", false);
+            active = d3.select(null);
+
+            g.transition()
+            .duration(750)
+            .style("stroke-width", "1.5px")
+            .attr("transform", "");
+
+            $('#bd').text("");
         }
         </script>
-        -->
-        <div id="map_container"></div>
-        <script>
-            var map = new Datamap({
-                element: document.getElementById('map_container'),
-                scope: 'usa'
-            });
-        </script>
-
+        <div>
+            <p id="bd"></p>
+        </div>
     </body>
 </html>

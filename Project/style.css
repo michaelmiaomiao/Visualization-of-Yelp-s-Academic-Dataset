@@ -3,48 +3,50 @@
     font-family: Verdana;
 }
 
-text {
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-}
-
-.states {
-    fill: #ccc;
-    stroke: #fff;
-}
-
-.symbol {
-    fill: steelblue;
-    fill-opacity: .8;
-    stroke: #fff;
-}
+h1 { font-size: 24px; }
 
 .navigator {
     border-bottom: 1px solid #aaa;
     padding: 5px;
 }
 
-a#currenttab {
-    border-bottom:1px solid #fff
+a#currenttab { border-bottom:1px solid #fff }
+
+a { color: black;
+    text-decoration: none;
+    padding: 5px;
+    border: 1px solid #aaa;
 }
 
-a { color: black; text-decoration:none;
-    padding:5px; border: 1px solid #aaa;
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 2px;
+    font-size: 15px;
+    background: #FFFFE0;
+    border: 1px;
+    border-radius: 8px;
+    pointer-events: none;
 }
 
-h1 {
-    font-size: 24px;
+.background {
+  fill: none;
+  pointer-events: all;
 }
 
-path {
+.feature {
+  fill: #ccc;
+  cursor: pointer;
+}
+
+.feature.active {
+  fill: orange;
+  opacity: 1;
+}
+
+.mesh {
+  fill: none;
   stroke: #fff;
-  fill-rule: evenodd;
-}
-
-#map_container {
-    position: relative;
-    width: 1300px;
-    height: 600px;
-    margin-left: auto;
-    margin-right: auto;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }

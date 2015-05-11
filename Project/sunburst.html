@@ -2,16 +2,12 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script type="text/javascript" src="d3/d3.v3.js"></script>
+        <title>EECS E6895 Project</title>
+        <script type="text/javascript"></script>
+        <script src="./lib/D3/d3.min.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head>
     <body>
-        <script src="./D3/d3.min.js"></script>
-        <script src="./TopoJSON/topojson.min.js"></script>
-        <script src="./Datamaps/datamaps.all.min.js"></script>
-        <script src="http://d3js.org/queue.v1.min.js"></script>
-
         <h1>Visualization of Yelp's Academic Dataset</h1>
         <div class="navigator">
             <a href="map.html">Map View</a>
@@ -104,46 +100,5 @@
         }
 
         </script>
-        <!--
-        <script>
-        var width = 960,
-            height = 500;
-
-        var radius = d3.scale.sqrt()
-            .domain([0, 1e6])
-            .range([0, 10]);
-
-        var path = d3.geo.path();
-
-        var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        queue()
-            .defer(d3.json, "us.json")
-            .defer(d3.json, "us-state-centroids.json")
-            .await(ready);
-
-        function ready(error, us, centroid) {
-          svg.append("path")
-              .attr("class", "states")
-              .datum(topojson.feature(us, us.objects.states))
-              .attr("d", path);
-
-          svg.selectAll(".symbol")
-              .data(centroid.features.sort(function(a, b) { return b.properties.population - a.properties.population; }))
-            .enter().append("path")
-              .attr("class", "symbol")
-              .attr("d", path.pointRadius(function(d) { return radius(d.properties.population); }));
-        }
-        </script>
-        <div id="map_container"></div>
-        <script>
-            var map = new Datamap({
-                element: document.getElementById('map_container'),
-                scope: 'usa'
-            });
-        </script>
-        -->
     </body>
 </html>
