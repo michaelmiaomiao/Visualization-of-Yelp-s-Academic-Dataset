@@ -8,109 +8,186 @@
         <script src="./lib/D3/d3.min.js"></script>
         <script src="./lib/TopoJSON/topojson.min.js"></script>
         <script src="http://d3js.org/queue.v1.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head>
     <body>
-        <h1>Visualization of Yelp's Academic Dataset</h1>
-        <div class="navigator">
-            <a id="currenttab" href="map.html">Map View</a>
-            <a href="sunburst.html">Sunburst Diagram</a>
-        </div>
-        <script>
-        var width = 960,
-            height = 500,
-            active = d3.select(null);
+        <section id="top">
+            <h1>Visualization of Yelp's Academic Dataset</h1>
+            <div class="navigator">
+                <a id="currenttab" href="map.html">Map View</a>
+                <a id="tab" href="sunburst.html">Sunburst Diagram</a>
+            </div>
+        </section>
+        <br>
+        <section id="canvas">
+                <script>
+                    var width = 960,
+                        height = 500,
+                        active = d3.select(null);
 
-        var projection = d3.geo.albersUsa()
-            .scale(1000)
-            .translate([width / 2, height / 2]);
+                    var radius = d3.scale.sqrt()
+                        .domain([0, 1e6])
+                        .range([0, 10]);
 
-        var path = d3.geo.path().projection(projection);
+                    var projection = d3.geo.albersUsa()
+                        .scale(1000)
+                        .translate([width / 2, height / 2]);
 
-        var tp = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+                    var path = d3.geo.path().projection(projection);
 
-        var svg = d3.select("body").append("svg")
-            .attr("width", width)
-            .attr("height", height);
+                    var stp = d3.select("body").select("section#canvas").append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
 
-        svg.append("rect")
-            .attr("class", "background")
-            .attr("width", width)
-            .attr("height", height)
-            .on("click", clicked);
+                    var utp = d3.select("body").select("section#canvas").append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
 
-        var g = svg.append("g").style("stroke-width", "1.5px");
-        var pairIDCode = {};
-        var pairIDName = {};
+                    var svg = d3.select("body").select("section#canvas").append("svg")
+                        .attr("class", "canvas")
+                        .attr("width", width)
+                        .attr("height", height);
 
-        queue()
-            .defer(d3.json, "./source/us.json")
-            .defer(d3.tsv, "./source/us-state-names.tsv")
-            .await(ready);
+                    svg.append("rect")
+                        .attr("class", "background")
+                        .attr("width", width)
+                        .attr("height", height)
+                        .on("click", reset);
 
-        function ready(error, us, names) {
-            names.forEach(function(d) {
-                pairIDCode[d.id] = d.code;
-                pairIDName[d.id] = d.name;
-            });
+                    var g = svg.append("g").style("stroke-width", "1.5px");
+                    var s = svg.append("g").attr("id", "sym");
+                    var pairIDCode = {};
+                    var pairIDName = {};
 
-            g.selectAll("path")
-            .data(topojson.feature(us, us.objects.states).features)
-            .enter().append("path")
-            .attr("d", path)
-            .attr("class", "feature")
-            .on("mouseover", function(d) {
-                tp.transition().duration(500).style("opacity", 1);
-                tp.text(pairIDName[d.id])
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 10) + "px");})
-            .on("mouseout", function(d) {
-                tp.transition().duration(500).style("opacity", 0);})
-            .on("click", clicked);
+                    queue()
+                        .defer(d3.json, "./source/JSON/us.json")
+                        .defer(d3.tsv, "./source/TSV/us-state-names.tsv")
+                        .defer(d3.json, "./source/JSON/us-school-centroids.json")
+                        .defer(d3.json, "./source/yelp-business-treemap.json")
+                        .await(ready);
 
-            g.append("path")
-            .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-            .attr("class", "mesh")
-            .attr("d", path);
-        }
+                    function ready(error, us, statename, centroid, business) {
+                        statename.forEach(function(d) {
+                            pairIDCode[d.id] = d.code;
+                            pairIDName[d.id] = d.name;
+                        });
 
-        function clicked(d) {
-            if (active.node() === this) return reset();
-            active.classed("active", false);
-            active = d3.select(this).classed("active", true);
+                        g.selectAll("path")
+                        .data(topojson.feature(us, us.objects.states).features)
+                        .enter().append("path")
+                        .attr("d", path)
+                        .attr("class", "feature")
+                        .attr("id", function(d) { return pairIDCode[d.id] })
+                        .on("mouseover", function(d) {
+                            stp.transition().duration(500).style("opacity", 1);
+                            stp.text(pairIDName[d.id])
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 10) + "px");})
+                        .on("mouseout", function(d) {
+                            stp.transition().duration(500).style("opacity", 0);})
+                        .on("click", clicked);
 
-            var bounds = path.bounds(d),
-                dx = bounds[1][0] - bounds[0][0],
-                dy = bounds[1][1] - bounds[0][1],
-                x = (bounds[0][0] + bounds[1][0]) / 2,
-                y = (bounds[0][1] + bounds[1][1]) / 2,
-                scale = .9 / Math.max(dx / width, dy / height),
-                translate = [width / 2 - scale * x, height / 2 - scale * y];
+                        g.append("path")
+                        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+                        .attr("class", "mesh")
+                        .attr("d", path);
 
-            g.transition()
-            .duration(750)
-            .style("stroke-width", 1.5 / scale + "px")
-            .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+                        s.selectAll("path")
+                        .data(centroid.features.sort(function(a, b) { return b.properties.count - a.properties.count; }))
+                        .enter().append("path")
+                        .attr("class", "symbol")
+                        .attr("id", function(d) { return d.properties.name })
+                        .attr("d", path.pointRadius(function(d) { return 25 * radius(d.properties.count); }))
+                        .attr("transform", "matrix(1 0 0 1 0 0)")
+                        .on("mouseover", function(d) {
+                            utp.transition().duration(500).style("opacity", 1);
+                            utp.text($(this).attr('id'))
+                                .style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 10) + "px");})
+                        .on("mouseout", function(d) {
+                            utp.transition().duration(500).style("opacity", 0);})
+                        .on("click", function(d) {
+                            clickedUniv($(this).attr('id'), business);
+                        });
+                    }
 
-            $('#bd').text(pairIDCode[d.id]);
-        }
+                    function clicked(d) {
+                        if (active.node() === this) return reset();
+                        active.classed("active", false);
+                        active = d3.select(this).classed("active", true);
 
-        function reset() {
-            active.classed("active", false);
-            active = d3.select(null);
+                        var bounds = path.bounds(d),
+                            dx = bounds[1][0] - bounds[0][0],
+                            dy = bounds[1][1] - bounds[0][1],
+                            x = (bounds[0][0] + bounds[1][0]) / 2,
+                            y = (bounds[0][1] + bounds[1][1]) / 2,
+                            scale = .9 / Math.max(dx / width, dy / height),
+                            translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-            g.transition()
-            .duration(750)
-            .style("stroke-width", "1.5px")
-            .attr("transform", "");
+                        g.transition()
+                        .duration(750)
+                        .style("stroke-width", 1.5 / scale + "px")
+                        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-            $('#bd').text("");
-        }
-        </script>
-        <div>
-            <p id="bd"></p>
-        </div>
+                        s.transition()
+                        .duration(750)
+                        .style("stroke-width", 1 / scale + "px")
+                        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+                        // $('#bdstate').text(pairIDCode[d.id]);
+                    }
+
+                    function clickedUniv(s, business) {
+                        //$('#bduniv').text(s);
+                        var clist = {};
+                        for (i = 0; i < business.children.length; i++) {
+                            if (business.children[i].name == s) {
+                                //$('#result').text(business.children[i].name);
+                                clist = business.children[i].children;
+                            }
+                        }
+                        $('section#board').html('<div class="container">').html('<h2>' + s).append('<div class="panel-group" id="accordion">');
+                        // var pg = $('div#accordion');
+                        for (i = 0; i < clist.length; i++) {
+                            $('<div class="panel panel-default">'
+                                + '<div class="panel-heading">'
+                                + '<h4 class="panel-title">'
+                                + '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '">'
+                                + clist[i].name + '</a></h4></div>').appendTo('div#accordion');
+                            // if (i == 0) {
+                            //     $('<div id="collapse' + (i+1) + '" class="panel-collapse collapse in"></div>').appendTo('div#accordion');
+                            // } else {
+                            $('<div id="collapse' + i + '" class="panel-collapse collapse"></div>').appendTo('div#accordion');
+                            // }
+                            var blist = clist[i].children;
+                            for (j = 0; j < blist.length; j++) {
+                                $('<div class="panel-body">'
+                                    + blist[j].name + '</div>').appendTo('div#collapse' + i);
+                            }
+                        }
+                    }
+
+                    function reset() {
+                        active.classed("active", false);
+                        active = d3.select(null);
+
+                        g.transition()
+                        .duration(750)
+                        .style("stroke-width", "1.5px")
+                        .attr("transform", "");
+
+                        s.transition()
+                        .duration(750)
+                        .style("stroke-width", "1px")
+                        .attr("transform", "");
+
+                        // $('#bdstate').text(" ");
+                        // $('#bduniv').text(" ");
+                    }
+                </script>
+        </section>
+        <br>
+        <section id="board"></section>
     </body>
 </html>
