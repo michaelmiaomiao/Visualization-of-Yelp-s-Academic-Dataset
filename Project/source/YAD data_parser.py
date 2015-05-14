@@ -103,8 +103,7 @@ if __name__ == "__main__":
 		file.write("\"name\": "+"\""+data[index][5]+"\""+",")
 		file.write("\"review_count\": "+"\""+data[index][4]+"\""+",")
 		file.write("\"photo_url\": "+"\""+data[index][3]+"\""+",")
-		file.write("\"star\": "+"\""+data[index][7]+"\""+",")
-		file.write("\"size\": 1")
+		file.write("\"star\": "+"\""+data[index][7]+"\"")
 		file.write("}")
 		index += 1
 
