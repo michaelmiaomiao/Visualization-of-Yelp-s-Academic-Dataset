@@ -59,6 +59,11 @@ div.tooltip {
     pointer-events: none;
 }
 
+.float {
+    position: fixed;
+    /*_position: absolute;*/
+    top: 50px; }
+
 .background {
   fill: none;
   pointer-events: all;

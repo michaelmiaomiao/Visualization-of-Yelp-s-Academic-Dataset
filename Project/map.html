@@ -203,20 +203,32 @@
                         // $('#bdstate').text(" ");
                         // $('#bduniv').text(" ");
                     }
+
+                    $(window).scroll(function(){
+                                var top = $('section#bdetail').offset().top + $('section#bdetail').height();
+                                var windowScroll = $(window).scrollTop();
+                                if( top <= windowScroll){
+                                    $("div#test").addClass("float");
+                                } else {
+                                    $("div#test").removeClass("float");
+                                }
+                            });
                 </script>
         </section>
         <br>
         <section id="bpanel"></section>
         <section id="bdetail">
-            <h2 id="bname"></h2>
-            <div style="float: left">
-                <img id="bpic" style="margin-left: 10px" src="">
-            </div>
-            <div style="float: left">
-                <br>
-                <a id="blink" style="margin-left: 10px"></a>
-                <br>
-                <p id="breview" style="margin-left: 10px"></p>
+            <div id="test" style="width: 480px">
+                <h2 id="bname" style="text-align: center"></h2>
+                <div style="float: left">
+                    <img id="bpic" style="margin-left: 10px" src="">
+                </div>
+                <div style="float: left">
+                    <br>
+                    <a id="blink" style="margin-left: 10px"></a>
+                    <br>
+                    <p id="breview" style="margin-left: 10px"></p>
+                </div>
             </div>
         </section>
     </body>
