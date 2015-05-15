@@ -11,8 +11,8 @@
         <section id="top">
             <h1>Visualization of Yelp's Academic Dataset</h1>
             <div class="navigator">
-                <a id="tab" href="map.html">Map View</a>
                 <a id="currenttab" href="sunburst.html">Sunburst Diagram</a>
+                <a id="tab" href="map.html">Map View</a>
             </div>
         </section>
         <br>
@@ -79,7 +79,7 @@
                                     .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")" })
                                     .attr("x", function(d) { return y(d.y); })
                                     .attr("opacity", 1);
-                                    //.attr("opacity", function(d) { return (y(d.y) > 250 ? 0 : 1) });
+                                    // .attr("opacity", function(d) { return (y(d.y) > 250 ? 0 : 1) });
                             }
                         });
                     }

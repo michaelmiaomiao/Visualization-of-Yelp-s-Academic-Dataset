@@ -15,8 +15,8 @@
         <section id="top">
             <h1>Visualization of Yelp's Academic Dataset</h1>
             <div class="navigator">
-                <a id="currenttab" href="map.html">Map View</a>
                 <a id="tab" href="sunburst.html">Sunburst Diagram</a>
+                <a id="currenttab" href="map.html">Map View</a>
             </div>
         </section>
         <br>
@@ -147,25 +147,43 @@
                                 clist = business.children[i].children;
                             }
                         }
-                        $('section#board').html('<div class="container">').html('<h2>' + s).append('<div class="panel-group" id="accordion">');
+                        $('section#bpanel').html('<div class="container">').html('<h2>' + s).append('<div class="panel-group" id="accordion">');
                         // var pg = $('div#accordion');
                         for (i = 0; i < clist.length; i++) {
                             $('<div class="panel panel-default">'
                                 + '<div class="panel-heading">'
                                 + '<h4 class="panel-title">'
-                                + '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '">'
+                                + '<a data-toggle="collapse" data-parent="#accordion" href="#collapse' + i + '" id="' + clist[i].name + '">'
                                 + clist[i].name + '</a></h4></div>').appendTo('div#accordion');
-                            // if (i == 0) {
-                            //     $('<div id="collapse' + (i+1) + '" class="panel-collapse collapse in"></div>').appendTo('div#accordion');
-                            // } else {
                             $('<div id="collapse' + i + '" class="panel-collapse collapse"></div>').appendTo('div#accordion');
-                            // }
                             var blist = clist[i].children;
                             for (j = 0; j < blist.length; j++) {
-                                $('<div class="panel-body">'
+                                $('<div class="panel-body" id="' + blist[j].name + '">'
                                     + blist[j].name + '</div>').appendTo('div#collapse' + i);
                             }
                         }
+
+                        $('div.panel-body').click(function() {
+                            var pick = $(this);
+                            var b;
+                            for (i = 0; i < clist.length; i++) {
+                                var blist = clist[i].children;
+                                for (j = 0; j < blist.length; j++) {
+                                    if (blist[j].name == pick.attr('id')) b = blist[j];
+                                }
+                            }
+                            $('h2#bname').text(b.name);
+                            $('img#bpic').attr('src', b.photo_url);
+                            $('a#blink').attr('href', b.url).text("Yelp page link");
+                            var n = "";
+                            if ((b.star * 2) % 2 == 0) {
+                                for (k = 0; k < b.star; k++) { n = n.concat("★"); }
+                            } else {
+                                for (k = 0; k < b.star - 0.5; k++) { n = n.concat("★"); }
+                                n = n.concat("☆");
+                            }
+                            $('p#breview').text(n);
+                        });
                     }
 
                     function reset() {
@@ -188,6 +206,18 @@
                 </script>
         </section>
         <br>
-        <section id="board"></section>
+        <section id="bpanel"></section>
+        <section id="bdetail">
+            <h2 id="bname"></h2>
+            <div style="float: left">
+                <img id="bpic" style="margin-left: 10px" src="">
+            </div>
+            <div style="float: left">
+                <br>
+                <a id="blink" style="margin-left: 10px"></a>
+                <br>
+                <p id="breview" style="margin-left: 10px"></p>
+            </div>
+        </section>
     </body>
 </html>

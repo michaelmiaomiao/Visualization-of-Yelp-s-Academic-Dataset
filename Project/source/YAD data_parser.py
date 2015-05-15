@@ -50,7 +50,7 @@ if __name__ == "__main__":
 				#print lines.strip().split("\":")[5].strip().split("[\"")[1].strip().split("\"]")[0]
 		data.sort(key=itemgetter(0,1))
 
-		print len(data)
+		# print data
 
 	file = open("yelp-business-treemap.json", "w")
 
@@ -103,6 +103,7 @@ if __name__ == "__main__":
 		file.write("\"name\": "+"\""+data[index][5]+"\""+",")
 		file.write("\"review_count\": "+"\""+data[index][4]+"\""+",")
 		file.write("\"photo_url\": "+"\""+data[index][3]+"\""+",")
+		file.write("\"url\": "+"\""+data[index][6]+"\""+",")
 		file.write("\"star\": "+"\""+data[index][7]+"\"")
 		file.write("}")
 		index += 1

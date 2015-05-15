@@ -38,7 +38,13 @@ section#canvas {
     height: 500px;
 }
 
-section#board {
+section#bpanel {
+    float: left;
+    width: 480px;
+}
+
+section#bdetail {
+    float: right;
     width: 480px;
 }
 
