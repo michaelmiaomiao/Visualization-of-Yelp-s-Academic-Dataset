@@ -205,14 +205,14 @@
                     }
 
                     $(window).scroll(function() {
-                                var top = $('section#bdetail').offset().top + $('section#bdetail').height();
-                                var windowScroll = $(window).scrollTop();
-                                if( top <= windowScroll){
-                                    $("div#test").addClass("float");
-                                } else {
-                                    $("div#test").removeClass("float");
-                                }
-                            });
+                        var top = $('section#bdetail').offset().top + $('section#bdetail').height();
+                        var windowScroll = $(window).scrollTop();
+                        if( top <= windowScroll){
+                            $("div#test").addClass("float");
+                        } else {
+                            $("div#test").removeClass("float");
+                        }
+                    });
                 </script>
         </section>
         <br>
