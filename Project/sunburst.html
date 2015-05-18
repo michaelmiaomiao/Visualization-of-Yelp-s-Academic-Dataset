@@ -18,9 +18,9 @@
         <br>
         <section>
             <script>
-                var width = 850,
-                    height = 850,
-                    radius = Math.min(width, height) / 2;
+                var width = 960,
+                    height = 960,
+                    radius = Math.min(width, height) / 3;
 
                 var x = d3.scale.linear()
                     .range([0, 2 * Math.PI]);
@@ -55,7 +55,7 @@
                         .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
                         .on("click", click);
 
-                    var text = g.append("text")
+                    var text = g.append("text").attr("class", "label")
                         .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
                         .attr("x", function(d) { return y(d.y); })
                         .attr("dx", "6") // margin
